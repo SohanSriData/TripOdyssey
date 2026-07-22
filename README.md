@@ -22,15 +22,21 @@ Trip Odyssey is an AI-powered travel planner with a FastAPI backend and Streamli
 
 ## Installation
 
-1. Activate your virtual environment (Windows):
+1. Activate your virtual environment:
 
+Windows:
 ```powershell
 c:\Users\sohan\Projects\AI_Trip_Planner\env\Scripts\activate
 ```
 
+Linux/macOS:
+```bash
+source env/bin/activate
+```
+
 2. Install dependencies:
 
-```powershell
+```bash
 pip install -r requirements.txt
 ```
 
