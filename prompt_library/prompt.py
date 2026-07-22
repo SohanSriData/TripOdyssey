@@ -80,3 +80,9 @@ Provide a concise Markdown review section with:
 Do not mention internal tool function names or tool call syntax in your review.
 If the plan is already good, say: "Plan reviewed: no critical issues found."'''
 )
+
+REVISION_PROMPT = SystemMessage(
+    content='''You are the travel planning assistant. Use the following travel plan and the review feedback to produce a revised, improved version of the plan.
+Return only the revised travel plan in clean Markdown. Do not include the review or review metadata in the final output.
+Preserve the original section structure and update any sections that need correction or clarification.'''
+)

@@ -48,15 +48,16 @@ async def query_travel_agent(query: QueryRequest):
 
         final_output = clean_agent_output(final_output)
 
-        # Second pass review for feasibility and budget accuracy
+        # Second pass review and revision to improve the final answer
         review_text = graph.review_plan(final_output)
         review_text = clean_agent_output(review_text)
-        combined_output = f"{final_output}\n\n## Planning Review\n{review_text}"
+        revised_output = graph.revise_plan(final_output, review_text)
+        final_answer = clean_agent_output(revised_output)
 
-        saved_file = save_document(combined_output)
+        saved_file = save_document(final_answer)
         logger.info("Saved travel plan to: %s", saved_file)
         
-        return {"answer": combined_output, "saved_file": saved_file}
+        return {"answer": final_answer, "saved_file": saved_file}
     except Exception as e:
         logger.error("Query failed: %s", str(e))
         return JSONResponse(status_code=500, content={"error": str(e)})

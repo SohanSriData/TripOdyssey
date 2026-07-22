@@ -1,5 +1,5 @@
 from utils.model_loader import ModelLoader
-from prompt_library.prompt import SYSTEM_PROMPT, REVIEW_PROMPT
+from prompt_library.prompt import SYSTEM_PROMPT, REVIEW_PROMPT, REVISION_PROMPT
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, MessagesState, END, START
 from langgraph.prebuilt import ToolNode, tools_condition
@@ -46,6 +46,7 @@ class GraphBuilder():
         self.system_prompt = SYSTEM_PROMPT
         self.planning_prompt = PLANNING_PROMPT
         self.review_prompt = REVIEW_PROMPT
+        self.revision_prompt = REVISION_PROMPT
 
     def agent_function(self, state: MessagesState):
         user_question = state["messages"]
@@ -59,6 +60,17 @@ class GraphBuilder():
         if hasattr(review_response, 'content'):
             return review_response.content
         return str(review_response)
+
+    def revise_plan(self, plan_text: str, review_text: str) -> str:
+        revise_input = [
+            self.system_prompt,
+            self.revision_prompt,
+            HumanMessage(content=f"Plan:\n{plan_text}\n\nReview:\n{review_text}"),
+        ]
+        revise_response = self.llm.invoke(revise_input)
+        if hasattr(revise_response, 'content'):
+            return revise_response.content
+        return str(revise_response)
 
     def build_graph(self):
         graph_builder = StateGraph(MessagesState)
