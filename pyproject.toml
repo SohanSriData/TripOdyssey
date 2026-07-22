@@ -1,0 +1,9 @@
+[project]
+name = "trip_odyssey"
+version = "0.1.0"
+description = "Travel Planner using Agentic AI"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.3.3",
+]
