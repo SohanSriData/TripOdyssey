@@ -22,29 +22,45 @@ Trip Odyssey is an AI-powered travel planner with a FastAPI backend and Streamli
 
 ## Installation
 
-1. Activate your virtual environment:
+1. Create and activate a virtual environment:
 
 Windows:
 ```powershell
-c:\Users\sohan\Projects\AI_Trip_Planner\env\Scripts\activate
+python -m venv env
+env\Scripts\activate
 ```
 
 Linux/macOS:
 ```bash
+python3 -m venv env
 source env/bin/activate
 ```
 
-2. Install dependencies:
+2. Upgrade pip and install dependencies:
 
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+3. Create a `.env` file in the project root and add your API keys:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+OPENAI_API_KEY=your_openai_api_key
+GPLACES_API_KEY=your_google_places_api_key
+OPENWEATHERMAP_API_KEY=your_openweathermap_api_key
+EXCHANGE_RATE_API_KEY=your_exchange_rate_api_key
+ALPHAVANTAGE_API_KEY=your_alphavantage_api_key
+```
+
+> Do not commit `.env` to GitHub. It should stay local to your machine.
 
 ## Running the backend
 
 Start the FastAPI server:
 
-```powershell
+```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -52,9 +68,9 @@ The API will be available at `http://localhost:8000`.
 
 ## Running the frontend
 
-In a separate terminal, start Streamlit:
+In a separate terminal with the virtual environment activated:
 
-```powershell
+```bash
 streamlit run streamlit_app.py
 ```
 
@@ -63,5 +79,5 @@ Then open the Streamlit app in your browser.
 ## Notes
 
 - The Streamlit app posts requests to `http://localhost:8000/query`.
-- If you use the OpenAI provider in code, set `OPENAI_API_KEY` as well.
-- The backend loads model configuration from `config/config.yaml` and environment variables.
+- `config/config.yaml` contains additional model configuration.
+- Your local `.env` file is ignored by `.gitignore` and should not be uploaded.
