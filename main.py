@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from agent.agentic_workflow import GraphBuilder
+from prompt_library.prompt import REVIEW_PROMPT
 from utils.save_to_doc import save_document
 from logger import get_logger
 import os
@@ -28,9 +29,8 @@ class QueryRequest(BaseModel):
 async def query_travel_agent(query: QueryRequest):
     try:
         logger.info("Received query: %s", query.question)
-        graph = GraphBuilder(model_provider = "groq")
+        graph = GraphBuilder(model_provider="groq")
         react_app = graph()
-        #react_app =graph.build_graph()
 
         png_graph = react_app.get_graph().draw_mermaid_png()
         with open("my_graph.png", "wb") as f:
@@ -39,7 +39,6 @@ async def query_travel_agent(query: QueryRequest):
         logger.info("Saved graph image to %s/my_graph.png", os.getcwd())
 
         messages = {"messages": [query.question]}
-
         output = react_app.invoke(messages)
 
         if isinstance(output, dict) and "messages" in output:
@@ -49,11 +48,17 @@ async def query_travel_agent(query: QueryRequest):
 
         final_output = clean_agent_output(final_output)
 
-        saved_file = save_document(final_output)
+        # Second pass review for feasibility and budget accuracy
+        review_text = graph.review_plan(final_output)
+        review_text = clean_agent_output(review_text)
+        combined_output = f"{final_output}\n\n## Planning Review\n{review_text}"
+
+        saved_file = save_document(combined_output)
         logger.info("Saved travel plan to: %s", saved_file)
         
-        return {"answer": final_output, "saved_file": saved_file}
+        return {"answer": combined_output, "saved_file": saved_file}
     except Exception as e:
-        return JSONResponse(status_code = 500, content ={"error": str(e)})
+        logger.error("Query failed: %s", str(e))
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
